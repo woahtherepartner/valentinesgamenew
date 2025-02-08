@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: pink;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        canvas {
+            background: url('https://i.imgur.com/YOUR_BEAR_IMAGE.png') no-repeat center;
+            background-size: cover;
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        #message {
+            font-size: 24px;
+            margin-top: 20px;
+            display: none;
+        }
+        #options {
+            display: none;
+            margin-top: 10px;
+        }
+        button {
+            font-size: 18px;
+            padding: 10px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: red;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+    <h1>Help the Bear Collect Hearts! 🐻❤️</h1>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <p id="message">Will you be my Valentine? ❤️</p>
+    <div id="options">
+        <button onclick="sayYes()">Yes</button>
+        <button onclick="sayYes()">Of course!</button>
+    </div>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let bear = { x: 50, y: 200, size: 50 };
+        let hearts = [];
+        let collected = 0;
+        
+        function drawBear() {
+            ctx.fillStyle = "brown";
+            ctx.beginPath();
+            ctx.arc(bear.x, bear.y, bear.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function drawHearts() {
+            ctx.fillStyle = "red";
+            hearts.forEach(heart => {
+                ctx.beginPath();
+                ctx.arc(heart.x, heart.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+        
+        function updateGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBear();
+            drawHearts();
+            
+            hearts.forEach((heart, index) => {
+                heart.x -= 2;
+                if (heart.x < 0) hearts.splice(index, 1);
+                if (Math.hypot(bear.x - heart.x, bear.y - heart.y) < 20) {
+                    hearts.splice(index, 1);
+                    collected++;
+                    if (collected >= 5) showMessage();
+                }
+            });
+        }
+        
+        function spawnHeart() {
+            hearts.push({ x: canvas.width, y: Math.random() * canvas.height });
+        }
+        
+        function showMessage() {
+            document.getElementById("message").style.display = "block";
+            document.getElementById("options").style.display = "block";
+        }
+        
+        function sayYes() {
+            alert("Yay! 💖 Can't wait for our date!");
+        }
+        
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp" && bear.y > 50) bear.y -= 20;
+            if (event.key === "ArrowDown" && bear.y < canvas.height - 50) bear.y += 20;
+        });
+        
+        setInterval(updateGame, 30);
+        setInterval(spawnHeart, 1000);
+    </script>
+</body>
+</html>
